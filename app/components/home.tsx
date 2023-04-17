@@ -22,7 +22,7 @@ import Locale from "../locales";
 import { Chat } from "./chat";
 
 import dynamic from "next/dynamic";
-// import { REPO_URL } from "../constant";
+// import { REPO_URL } from "../constant"1;
 import { ErrorBoundary } from "./error";
 
 export function Loading(props: { noLogo?: boolean }) {
