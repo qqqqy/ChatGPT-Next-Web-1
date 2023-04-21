@@ -41,8 +41,13 @@ function getHeaders() {
   //   headers["access-code"] = accessStore.accessCode;
   // }
 
-  //                  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
-  headers["token"] = "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";
+  let key = [
+    "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",
+    "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",
+    "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",
+    "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",
+  ];
+  headers["token"] = key[Math.floor(Math.random() * key.length)];
   // if (accessStore.token && accessStore.token.length > 0) {
   //   headers["token"] = accessStore.token;
   // }
