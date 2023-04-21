@@ -34,14 +34,15 @@ const makeRequestParam = (
 };
 
 function getHeaders() {
-  const accessStore = useAccessStore.getState();
+  // const accessStore = useAccessStore.getState();
   let headers: Record<string, string> = {};
 
   // if (accessStore.enabledAccessControl()) {
   //   headers["access-code"] = accessStore.accessCode;
   // }
 
-  headers["token"] = "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";
+  //                  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
+  headers["token"] = "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";
   // if (accessStore.token && accessStore.token.length > 0) {
   //   headers["token"] = accessStore.token;
   // }
