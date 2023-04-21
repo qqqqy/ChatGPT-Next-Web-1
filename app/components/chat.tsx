@@ -129,7 +129,7 @@ function exportMessages(messages: Message[], topic: string) {
 function autoUserLogin(props: { msg: string }) {
   // 在组件渲染时从localStorage获取用户信息
   const savedUserInfo = localStorage.getItem("userInfo");
-  let user = {};
+  let user = { username: "", password: "", status: "" };
   if (
     !savedUserInfo ||
     savedUserInfo === "undefined" ||
