@@ -154,7 +154,12 @@ function _Home() {
   if (loading) {
     return <Loading />;
   }
-
+  // 在组件渲染时从localStorage获取用户信息
+  const savedUserInfo = localStorage.getItem("userInfo");
+  let user = {};
+  if (savedUserInfo) {
+    user = JSON.parse(savedUserInfo);
+  }
   return (
     <div
       className={`${
@@ -167,9 +172,13 @@ function _Home() {
         className={styles.sidebar + ` ${showSideBar && styles["sidebar-show"]}`}
       >
         <div className={styles["sidebar-header"]}>
-          <div className={styles["sidebar-title"]}>ChatGPT Next</div>
-          <div className={styles["sidebar-sub-title"]}>
-            Build your own AI assistant.
+          <div className={styles["sidebar-title"]}>ChatGPT</div>
+          <div className={styles["sidebar-sub-title"]}></div>
+          <div style={{ color: "#1f948c", fontSize: "16px" }}>
+            仅供内部学习测试使用
+          </div>
+          <div style={{ color: "#1f948c", fontSize: "14px" }}>
+            严禁扩散传播!
           </div>
           <div className={styles["sidebar-logo"]}>
             <ChatGptIcon />
@@ -194,16 +203,18 @@ function _Home() {
                 onClick={chatStore.deleteSession}
               />
             </div>
-            <div className={styles["sidebar-action"]}>
-              <IconButton
-                icon={<SettingsIcon />}
-                onClick={() => {
-                  setOpenSettings(true);
-                  setShowSideBar(false);
-                }}
-                shadow
-              />
-            </div>
+            {user.isAdmin === "1" && (
+              <div className={styles["sidebar-action"]}>
+                <IconButton
+                  icon={<SettingsIcon />}
+                  onClick={() => {
+                    setOpenSettings(true);
+                    setShowSideBar(false);
+                  }}
+                  shadow
+                />
+              </div>
+            )}
             {/*<div className={styles["sidebar-action"]}>*/}
             {/*  <a href={REPO_URL} target="_blank">*/}
             {/*    <IconButton icon={<GithubIcon />} shadow />*/}

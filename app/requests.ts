@@ -37,13 +37,14 @@ function getHeaders() {
   const accessStore = useAccessStore.getState();
   let headers: Record<string, string> = {};
 
-  if (accessStore.enabledAccessControl()) {
-    headers["access-code"] = accessStore.accessCode;
-  }
+  // if (accessStore.enabledAccessControl()) {
+  //   headers["access-code"] = accessStore.accessCode;
+  // }
 
-  if (accessStore.token && accessStore.token.length > 0) {
-    headers["token"] = accessStore.token;
-  }
+  headers["token"] = "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";
+  // if (accessStore.token && accessStore.token.length > 0) {
+  //   headers["token"] = accessStore.token;
+  // }
 
   return headers;
 }
@@ -113,7 +114,7 @@ export async function requestUsage() {
   if (response.total_usage) {
     response.total_usage = Math.round(response.total_usage) / 100;
   }
-  
+
   if (total.hard_limit_usd) {
     total.hard_limit_usd = Math.round(total.hard_limit_usd * 100) / 100;
   }

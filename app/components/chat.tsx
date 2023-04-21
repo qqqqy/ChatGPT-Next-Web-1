@@ -6,7 +6,9 @@ import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
 import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
+import LoginIcon from "../icons/login.svg";
 import CopyIcon from "../icons/copy.svg";
+import Close from "../icons/close.svg";
 import DownloadIcon from "../icons/download.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import BotIcon from "../icons/bot.svg";
@@ -14,12 +16,14 @@ import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
+// import Chatgpt from "../icons/chatgpt.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
+import crypto from "crypto";
 
 import {
   Message,
@@ -51,7 +55,9 @@ import { IconButton } from "./button";
 import styles from "./home.module.scss";
 import chatStyle from "./chat.module.scss";
 
-import { Input, Modal, showModal } from "./ui-lib";
+import { Input, Modal, showModal, showToast } from "./ui-lib";
+
+const baseurl = "http://39.129.11.212:18094/api/biz-gsxy/gpt/user/";
 
 const Markdown = dynamic(
   async () => memo((await import("./markdown")).Markdown),
@@ -118,6 +124,303 @@ function exportMessages(messages: Message[], topic: string) {
       />,
     ],
   });
+}
+
+function autoUserLogin(props: { msg: string }) {
+  // 在组件渲染时从localStorage获取用户信息
+  const savedUserInfo = localStorage.getItem("userInfo");
+  let user = {};
+  if (
+    !savedUserInfo ||
+    savedUserInfo === "undefined" ||
+    savedUserInfo === "null" ||
+    savedUserInfo == null
+  ) {
+    // showModal({
+    //   title: "登录",
+    //   children: <ModelLogin />
+    // });
+    showToast("账号异常,请登录");
+  } else {
+    // 如果localStorage中有用户信息，请求并更新状态
+    user = JSON.parse(savedUserInfo);
+    login(user.username, user.password, props.msg).then((res) => {
+      localStorage.setItem("userInfo", JSON.stringify(res.data));
+      if (res.success && res.data.status !== "正常") {
+        showToast("账号异常");
+      }
+    });
+  }
+  return user && user.status === "正常";
+}
+function userLogin() {
+  showModal({
+    title: "登录",
+    children: <ModelLogin />,
+  });
+}
+function md5_u(str: string): string {
+  let md5Hash = crypto.createHash("md5");
+  md5Hash.update(str);
+  return md5Hash.digest("hex").toUpperCase();
+}
+function formatDate() {
+  const date = new Date();
+  const year = date.getFullYear().toString().padStart(4, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hour = date.getHours().toString().padStart(2, "0");
+  // const minute = date.getMinutes().toString().padStart(2, '0');
+
+  return `${year}${month}${day}${hour}`;
+}
+function ModelLogin() {
+  const [username, setUsername] = useState("");
+  const onInputUsername = (text: string) => {
+    setUsername(text);
+  };
+  const [password, setPassword] = useState("");
+  const onInputPassword = (text: string) => {
+    setPassword(text);
+  };
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    // 在组件渲染时从localStorage获取用户信息
+    const savedUserInfo = localStorage.getItem("userInfo");
+    if (savedUserInfo) {
+      let user = JSON.parse(savedUserInfo);
+      setUserInfo(user);
+      setUsername(user.username);
+      setPassword(user.password);
+      login(user.username, user.password, "")
+        .then((response) => {
+          if (response.success) {
+            const md5 = md5_u(
+              response.data.username + response.data.password + "Qy1994@",
+            );
+            if (md5 === response.data.errorPwd) {
+              // showToast(response.message);
+              // 登录成功
+              localStorage.setItem("userInfo", JSON.stringify(response.data));
+              setUserInfo(response.data);
+            }
+          } else {
+            setUserInfo(null);
+            localStorage.removeItem("userInfo");
+            showToast("登录失败: " + response.message);
+          }
+        })
+        .catch((error) => {
+          showToast(error.message);
+        });
+    }
+  }, []);
+  const DoLogout = () => {
+    alert("登出成功");
+    // 清除用户信息状态和localStorage中的用户信息
+    setUserInfo(null);
+    localStorage.removeItem("userInfo");
+  };
+
+  const DoLogin = () => {
+    // 检查用户名和密码是否为空
+    if (username.trim() === "" || password.trim() === "") {
+      showToast("用户名和密码不能为空");
+      return;
+    }
+
+    // 向服务器发送登录请求，并处理响应结果
+    login(username, password, "")
+      .then((response) => {
+        if (response.success) {
+          const md5 = md5_u(username + password + "Qy1994@");
+          if (md5 === response.data.errorPwd) {
+            showToast(response.message);
+            // 登录成功
+            localStorage.setItem("userInfo", JSON.stringify(response.data));
+            setUserInfo(response.data);
+          } else {
+            showToast("接口验证失败");
+          }
+        } else {
+          showToast("登录失败: " + response.message);
+        }
+      })
+      .catch((error) => {
+        showToast(error.message);
+      });
+  };
+  return (
+    <div className={chatStyle["context-prompt"]}>
+      {userInfo ? (
+        // 登录成功后展示用户信息
+        <ul style={{ margin: 0, padding: 0 }}>
+          <li
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <span style={{ marginRight: "8px", fontWeight: "bold" }}>
+              电话号：
+            </span>
+            <span>{userInfo.username}</span>
+          </li>
+          <li
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <span style={{ marginRight: "8px", fontWeight: "bold" }}>
+              真实姓名：
+            </span>
+            <span>{userInfo.realname}</span>
+          </li>
+          <li
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <span style={{ marginRight: "8px", fontWeight: "bold" }}>
+              状态：
+            </span>
+            <span>{userInfo.status}</span>
+          </li>
+          <li
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <span
+              style={{
+                marginRight: "8px",
+                fontWeight: "bold",
+                color: "#de6b6b",
+              }}
+            >
+              仅供内部学习测试使用, 严禁扩散传播!
+            </span>
+          </li>
+          <li
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "8px",
+              marginTop: "50px",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                right: 0,
+                color: "#3387ec",
+                cursor: "pointer",
+                // textDecoration: "underline",
+                marginRight: "20px",
+              }}
+              onClick={DoLogout}
+            >
+              注销账号
+            </div>
+          </li>
+        </ul>
+      ) : (
+        // 登录前展示登录表单
+        <div>
+          <div className={chatStyle["context-prompt-row"]}>
+            <div style={{ width: "80px", lineHeight: "40px" }}>用户名：</div>
+            <Input
+              value={username}
+              type="text"
+              className={chatStyle["context-prompt-row"]}
+              onInput={(e) => onInputUsername(e.currentTarget.value)}
+              rows={1}
+            />
+          </div>
+          <div className={chatStyle["context-prompt-row"]}>
+            <div style={{ width: "80px", lineHeight: "40px" }}>密码：</div>
+            <Input
+              value={password}
+              type="password"
+              className={chatStyle["context-prompt-row"]}
+              onInput={(e) => onInputPassword(e.currentTarget.value)}
+              rows={1}
+            />
+          </div>
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <span style={{ fontWeight: "bold", color: "#de6b6b" }}>
+              仅供内部学习测试使用, 严禁扩散传播!
+            </span>
+          </div>
+          <div className={chatStyle["context-prompt-row"]}>
+            <IconButton
+              icon={<BrainIcon />}
+              text="登 录"
+              bordered
+              className={chatStyle["context-prompt-button"]}
+              onClick={DoLogin}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+function getHeaders() {
+  const accessStore = useAccessStore.getState();
+  let headers: Record<string, string> = {};
+
+  if (accessStore.enabledAccessControl()) {
+    headers["access-code"] = accessStore.accessCode;
+  }
+
+  if (accessStore.token && accessStore.token.length > 0) {
+    headers["token"] = accessStore.token;
+  }
+
+  return headers;
+}
+function login(
+  username: string,
+  password: string,
+  msg: string,
+): Promise<{ success: boolean; message: string }> {
+  const data = { username, password, msg };
+
+  return fetch(baseurl + "login_check", {
+    method: "POST",
+    headers: {
+      ...getHeaders,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        showToast("网络错误");
+      }
+    })
+    .then((result) => {
+      return {
+        success: result.success,
+        message: result.message ? result.message : result.msg,
+        data: result.data,
+      };
+    })
+    .catch((error) => {
+      return { success: false, message: error.message };
+    });
 }
 
 function PromptToast(props: {
@@ -497,6 +800,10 @@ export function Chat(props: {
   // submit user input
   const onUserSubmit = () => {
     if (userInput.length <= 0) return;
+    if (!autoUserLogin({ msg: userInput })) {
+      return;
+    }
+
     setIsLoading(true);
     chatStore.onUserInput(userInput).then(() => setIsLoading(false));
     setBeforeInput(userInput);
@@ -661,6 +968,15 @@ export function Chat(props: {
               bordered
               title={Locale.Chat.Actions.ChatList}
               onClick={props?.showSideBar}
+            />
+          </div>
+          {/*登录弹窗*/}
+          <div className={styles["window-action-button"]}>
+            <IconButton
+              icon={<LoginIcon />}
+              bordered
+              title="登录"
+              onClick={userLogin}
             />
           </div>
           <div className={styles["window-action-button"]}>
