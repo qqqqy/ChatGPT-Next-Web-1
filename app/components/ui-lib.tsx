@@ -121,7 +121,14 @@ export type ToastProps = {
 export function Toast(props: ToastProps) {
   return (
     <div className={styles["toast-container"]}>
-      <div className={styles["toast-content"]}>
+      <div
+        className={styles["toast-content"]}
+        style={{
+          backgroundColor: "#fc6c6c",
+          color: "#EDF3F6FF",
+          border: "solid 2px #ffffff",
+        }}
+      >
         <span>{props.content}</span>
         {props.action && (
           <button

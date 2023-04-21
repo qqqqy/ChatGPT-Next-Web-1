@@ -140,7 +140,7 @@ function autoUserLogin(props: { msg: string }) {
     //   title: "登录",
     //   children: <ModelLogin />
     // });
-    showToast("账号异常,请登录");
+    showToast("点击右上角按钮进行登录");
   } else {
     // 如果localStorage中有用户信息，请求并更新状态
     user = JSON.parse(savedUserInfo);
@@ -970,15 +970,6 @@ export function Chat(props: {
               onClick={props?.showSideBar}
             />
           </div>
-          {/*登录弹窗*/}
-          <div className={styles["window-action-button"]}>
-            <IconButton
-              icon={<LoginIcon />}
-              bordered
-              title="登录"
-              onClick={userLogin}
-            />
-          </div>
           <div className={styles["window-action-button"]}>
             <IconButton
               icon={<RenameIcon />}
@@ -1012,6 +1003,18 @@ export function Chat(props: {
               />
             </div>
           )}
+          {/*登录弹窗*/}
+          <div
+            className={styles["window-action-button"]}
+            style={{ border: "solid 2px #1f948c", borderRadius: "12px" }}
+          >
+            <IconButton
+              icon={<LoginIcon />}
+              bordered
+              title="登录"
+              onClick={userLogin}
+            />
+          </div>
         </div>
 
         <PromptToast
