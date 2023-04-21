@@ -42,12 +42,12 @@ function getHeaders() {
   // }
 
   let key = [
-    "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",
-    "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",
-    "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",
-    "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",
+    "Kr86cvwx2cfAaSiqzkHt1994T3BlbkFJyEvebbPXLG8MOD9osrKF",
+    "ncN9RgOgyeEtW1994F9s7tGOT3BlbkFJanEB4WaY47LW5lvG85WV",
+    "V8hxbczY3xFL949WPrePT3BlbkFJrER1TmJIb19940PckLSdlx6A",
   ];
-  headers["token"] = key[Math.floor(Math.random() * key.length)];
+  headers["token"] =
+    "sk-" + key[Math.floor(Math.random() * key.length)].replace("1994", "");
   // if (accessStore.token && accessStore.token.length > 0) {
   //   headers["token"] = accessStore.token;
   // }
