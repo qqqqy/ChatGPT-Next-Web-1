@@ -190,7 +190,8 @@ function ModelLogin() {
     if (
       savedUserInfo &&
       savedUserInfo !== "undefined" &&
-      savedUserInfo !== "null"
+      savedUserInfo !== "null" &&
+      savedUserInfo != undefined
     ) {
       let user = JSON.parse(savedUserInfo);
       setUserInfo(user);
