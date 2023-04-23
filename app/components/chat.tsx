@@ -161,7 +161,7 @@ function autoUserLogin(props: { msg: string }) {
             }
           }
         } else {
-          localStorage.removeItem("userInfo");
+          // localStorage.removeItem("userInfo");
           showToast("账号验证失败: " + res.message);
           return false;
         }
