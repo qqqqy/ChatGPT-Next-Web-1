@@ -147,13 +147,28 @@ function autoUserLogin(props: { msg: string }) {
     console.log(2);
     user = JSON.parse(savedUserInfo);
     console.log(3);
-    login(user.uname, user.pwd, props.msg).then((res) => {
-      console.log(res);
-      localStorage.setItem("userInfo", JSON.stringify(res.data));
-      if (res.success && res.data.status !== "正常") {
-        showToast("账号异常");
-      }
-    });
+    login(user.uname, user.pwd, props.msg)
+      .then((res) => {
+        console.log(res);
+        if (res.success) {
+          const md5 = md5_u(res.data.uname + res.data.pwd + "Qy1994@");
+          if (md5 === res.data.errorPwd) {
+            // showToast(response.message);
+            // 登录成功
+            localStorage.setItem("userInfo", JSON.stringify(res.data));
+            if (res.success && res.data.status !== "正常") {
+              showToast("账号异常");
+            }
+          }
+        } else {
+          localStorage.removeItem("userInfo");
+          showToast("账号验证失败: " + res.message);
+          return false;
+        }
+      })
+      .catch((error) => {
+        showToast(error.message);
+      });
   }
   return user && user.status === "正常";
 }
