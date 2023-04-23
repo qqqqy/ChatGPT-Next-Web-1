@@ -225,7 +225,7 @@ function ModelLogin() {
   const DoLogin = () => {
     // 检查用户名和密码是否为空
     if (uname.trim() === "" || pwd.trim() === "") {
-      showToast("用户名和密码不能为空");
+      showToast("用户名和密码不能为空!");
       return;
     }
 
