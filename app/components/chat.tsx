@@ -187,7 +187,11 @@ function ModelLogin() {
   useEffect(() => {
     // 在组件渲染时从localStorage获取用户信息
     const savedUserInfo = localStorage.getItem("userInfo");
-    if (savedUserInfo) {
+    if (
+      savedUserInfo &&
+      savedUserInfo !== "undefined" &&
+      savedUserInfo !== "null"
+    ) {
       let user = JSON.parse(savedUserInfo);
       setUserInfo(user);
       setUname(user.uname);
