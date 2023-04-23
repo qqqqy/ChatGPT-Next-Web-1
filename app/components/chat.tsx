@@ -134,7 +134,8 @@ function autoUserLogin(props: { msg: string }) {
     !savedUserInfo ||
     savedUserInfo === "undefined" ||
     savedUserInfo === "null" ||
-    savedUserInfo == null
+    savedUserInfo == null ||
+    savedUserInfo === undefined
   ) {
     // showModal({
     //   title: "登录",
@@ -145,6 +146,7 @@ function autoUserLogin(props: { msg: string }) {
     // 如果localStorage中有用户信息，请求并更新状态
     user = JSON.parse(savedUserInfo);
     login(user.uname, user.pwd, props.msg).then((res) => {
+      console.log(res);
       localStorage.setItem("userInfo", JSON.stringify(res.data));
       if (res.success && res.data.status !== "正常") {
         showToast("账号异常");
