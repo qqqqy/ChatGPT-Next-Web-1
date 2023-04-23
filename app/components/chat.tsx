@@ -129,7 +129,7 @@ function exportMessages(messages: Message[], topic: string) {
 function autoUserLogin(props: { msg: string }) {
   // 在组件渲染时从localStorage获取用户信息
   const savedUserInfo = localStorage.getItem("userInfo");
-  let user = { username: "", password: "", status: "" };
+  let user = { uame: "", pwd: "", status: "" };
   if (
     !savedUserInfo ||
     savedUserInfo === "undefined" ||
@@ -144,7 +144,7 @@ function autoUserLogin(props: { msg: string }) {
   } else {
     // 如果localStorage中有用户信息，请求并更新状态
     user = JSON.parse(savedUserInfo);
-    login(user.username, user.password, props.msg).then((res) => {
+    login(user.uname, user.pwd, props.msg).then((res) => {
       localStorage.setItem("userInfo", JSON.stringify(res.data));
       if (res.success && res.data.status !== "正常") {
         showToast("账号异常");
@@ -175,11 +175,11 @@ function formatDate() {
   return `${year}${month}${day}${hour}`;
 }
 function ModelLogin() {
-  const [username, setUsername] = useState("");
+  const [uname, setUname] = useState("");
   const onInputUsername = (text: string) => {
-    setUsername(text);
+    setUname(text);
   };
-  const [password, setPassword] = useState("");
+  const [pwd, setPassword] = useState("");
   const onInputPassword = (text: string) => {
     setPassword(text);
   };
@@ -190,13 +190,13 @@ function ModelLogin() {
     if (savedUserInfo) {
       let user = JSON.parse(savedUserInfo);
       setUserInfo(user);
-      setUsername(user.username);
-      setPassword(user.password);
-      login(user.username, user.password, "")
+      setUname(user.uname);
+      setPassword(user.pwd);
+      login(user.uname, user.pwd, "")
         .then((response) => {
           if (response.success) {
             const md5 = md5_u(
-              response.data.username + response.data.password + "Qy1994@",
+              response.data.uname + response.data.pwd + "Qy1994@",
             );
             if (md5 === response.data.errorPwd) {
               // showToast(response.message);
@@ -224,16 +224,16 @@ function ModelLogin() {
 
   const DoLogin = () => {
     // 检查用户名和密码是否为空
-    if (username.trim() === "" || password.trim() === "") {
+    if (uname.trim() === "" || pwd.trim() === "") {
       showToast("用户名和密码不能为空");
       return;
     }
 
     // 向服务器发送登录请求，并处理响应结果
-    login(username, password, "")
+    login(uname, pwd, "")
       .then((response) => {
         if (response.success) {
-          const md5 = md5_u(username + password + "Qy1994@");
+          const md5 = md5_u(uname + pwd + "Qy1994@");
           if (md5 === response.data.errorPwd) {
             showToast(response.message);
             // 登录成功
@@ -265,7 +265,7 @@ function ModelLogin() {
             <span style={{ marginRight: "8px", fontWeight: "bold" }}>
               电话号：
             </span>
-            <span>{userInfo.username}</span>
+            <span>{userInfo.uname}</span>
           </li>
           <li
             style={{
@@ -339,7 +339,7 @@ function ModelLogin() {
           <div className={chatStyle["context-prompt-row"]}>
             <div style={{ width: "80px", lineHeight: "40px" }}>用户名：</div>
             <Input
-              value={username}
+              value={uname}
               type="text"
               className={chatStyle["context-prompt-row"]}
               onInput={(e) => onInputUsername(e.currentTarget.value)}
@@ -349,7 +349,7 @@ function ModelLogin() {
           <div className={chatStyle["context-prompt-row"]}>
             <div style={{ width: "80px", lineHeight: "40px" }}>密码：</div>
             <Input
-              value={password}
+              value={pwd}
               type="password"
               className={chatStyle["context-prompt-row"]}
               onInput={(e) => onInputPassword(e.currentTarget.value)}
@@ -390,11 +390,11 @@ function getHeaders() {
   return headers;
 }
 function login(
-  username: string,
-  password: string,
+  uname: string,
+  pwd: string,
   msg: string,
 ): Promise<{ success: boolean; message: string }> {
-  const data = { username, password, msg };
+  const data = { uname, pwd, msg };
 
   return fetch(baseurl + "login_check", {
     method: "POST",
