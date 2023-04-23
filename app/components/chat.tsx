@@ -144,7 +144,9 @@ function autoUserLogin(props: { msg: string }) {
     showToast("点击右上角按钮进行登录");
   } else {
     // 如果localStorage中有用户信息，请求并更新状态
+    console.log(2);
     user = JSON.parse(savedUserInfo);
+    console.log(3);
     login(user.uname, user.pwd, props.msg).then((res) => {
       console.log(res);
       localStorage.setItem("userInfo", JSON.stringify(res.data));
@@ -195,7 +197,9 @@ function ModelLogin() {
       savedUserInfo !== "null" &&
       savedUserInfo !== undefined
     ) {
+      console.log(1);
       let user = JSON.parse(savedUserInfo);
+      console.log(4);
       setUserInfo(user);
       setUname(user.uname);
       setPassword(user.pwd);
