@@ -57,6 +57,7 @@ import chatStyle from "./chat.module.scss";
 
 import { Input, Modal, showModal, showToast } from "./ui-lib";
 
+// const baseurl = "http://localhost:80/api/biz-gsxy-qy/gpt/user/";
 const baseurl = "http://39.129.11.212:18094/api/biz-gsxy/gpt/user/";
 
 const Markdown = dynamic(
@@ -126,52 +127,7 @@ function exportMessages(messages: Message[], topic: string) {
   });
 }
 
-function autoUserLogin(props: { msg: string }) {
-  // 在组件渲染时从localStorage获取用户信息
-  const savedUserInfo = localStorage.getItem("userInfo");
-  let user = { uame: "", pwd: "", status: "" };
-  if (
-    !savedUserInfo ||
-    savedUserInfo === "undefined" ||
-    savedUserInfo === "null" ||
-    savedUserInfo == null ||
-    savedUserInfo === undefined
-  ) {
-    // showModal({
-    //   title: "登录",
-    //   children: <ModelLogin />
-    // });
-    showToast("点击右上角按钮进行登录");
-  } else {
-    // 如果localStorage中有用户信息，请求并更新状态
-    console.log(2);
-    user = JSON.parse(savedUserInfo);
-    console.log(3);
-    login(user.uname, user.pwd, props.msg)
-      .then((res) => {
-        console.log(res);
-        if (res.success) {
-          const md5 = md5_u(res.data.uname + res.data.pwd + "Qy1994@");
-          if (md5 === res.data.errorPwd) {
-            // showToast(response.message);
-            // 登录成功
-            localStorage.setItem("userInfo", JSON.stringify(res.data));
-            if (res.success && res.data.status !== "正常") {
-              showToast("账号异常");
-            }
-          }
-        } else {
-          // localStorage.removeItem("userInfo");
-          showToast("账号验证失败: " + res.message);
-          return false;
-        }
-      })
-      .catch((error) => {
-        showToast(error.message);
-      });
-  }
-  return user && user.status === "正常";
-}
+function autoUserLogin(props: { msg: string }) {}
 function userLogin() {
   showModal({
     title: "登录",
@@ -193,6 +149,17 @@ function formatDate() {
 
   return `${year}${month}${day}${hour}`;
 }
+function generateRandomString(length: number) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 function ModelLogin() {
   const [uname, setUname] = useState("");
   const onInputUsername = (text: string) => {
@@ -212,9 +179,7 @@ function ModelLogin() {
       savedUserInfo !== "null" &&
       savedUserInfo !== undefined
     ) {
-      console.log(1);
       let user = JSON.parse(savedUserInfo);
-      console.log(4);
       setUserInfo(user);
       setUname(user.uname);
       setPassword(user.pwd);
@@ -317,6 +282,39 @@ function ModelLogin() {
             </span>
             <span>{userInfo.status}</span>
           </li>
+          {userInfo.extDate ? (
+            <li
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <span style={{ marginRight: "8px", fontWeight: "bold" }}>
+                有效期至：
+              </span>
+              <span>{userInfo.extDate}</span>
+            </li>
+          ) : null}
+          {userInfo.extDate ? (
+            <li
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <span
+                style={{
+                  marginRight: "8px",
+                  fontWeight: "bold",
+                  marginTop: "20px",
+                }}
+              >
+                如需创建账号请添加微信：uncut_stone
+              </span>
+            </li>
+          ) : null}
           <li
             style={{
               display: "flex",
@@ -420,7 +418,18 @@ function login(
   pwd: string,
   msg: string,
 ): Promise<{ success: boolean; message: string }> {
-  const data = { uname, pwd, msg };
+  let code = localStorage.getItem("code");
+  if (!code || code === "undefined" || code === "null" || code === undefined) {
+    localStorage.setItem("code", generateRandomString(16));
+    code = localStorage.getItem("code");
+  }
+  if (!code) {
+    return Promise.resolve({
+      success: false,
+      message: "页面加载出错，请刷新后重试",
+    });
+  }
+  const data = { uname, pwd, msg, code };
 
   return fetch(baseurl + "login_check", {
     method: "POST",
@@ -822,21 +831,74 @@ export function Chat(props: {
       }
     }
   };
+  function isAfterToday(inputDateString: string): boolean {
+    const inputDate = new Date(inputDateString); // 将日期字符串转换为 Date 对象
+    const today = new Date(); // 获取当前日期
+    const todayTimestamp = today.getTime(); // 转换为时间戳
 
+    const inputDateTimestamp = inputDate.getTime(); // 待判断日期转为时间戳
+
+    // 判断待判断日期是否晚于当前日期
+    if (inputDateTimestamp > todayTimestamp) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   // submit user input
   const onUserSubmit = () => {
     if (userInput.length <= 0) return;
-    if (!autoUserLogin({ msg: userInput })) {
-      return;
+    // 在组件渲染时从localStorage获取用户信息
+    const savedUserInfo = localStorage.getItem("userInfo");
+    let user = { uame: "", pwd: "", status: "" };
+    if (
+      !savedUserInfo ||
+      savedUserInfo === "undefined" ||
+      savedUserInfo === "null" ||
+      savedUserInfo == null ||
+      savedUserInfo === undefined
+    ) {
+      showToast("点击右上角按钮进行登录");
+    } else {
+      // 如果localStorage中有用户信息，请求并更新状态
+      user = JSON.parse(savedUserInfo);
+      login(user.uname, user.pwd, props.msg)
+        .then((res) => {
+          console.log(res);
+          if (res.success) {
+            const md5 = md5_u(res.data.uname + res.data.pwd + "Qy1994@");
+            if (md5 === res.data.errorPwd) {
+              console.log(isAfterToday(res.data.extDate));
+              if (!isAfterToday(res.data.extDate)) {
+                showToast("授权已过期");
+                return;
+              }
+              // 登录成功
+              localStorage.setItem("userInfo", JSON.stringify(res.data));
+              if (res.success && res.data.status !== "正常") {
+                showToast("账号异常");
+                return;
+              } else {
+                setIsLoading(true);
+                chatStore
+                  .onUserInput(userInput)
+                  .then(() => setIsLoading(false));
+                setBeforeInput(userInput);
+                setUserInput("");
+                setPromptHints([]);
+                if (!isMobileScreen()) inputRef.current?.focus();
+                setAutoScroll(true);
+              }
+            }
+          } else {
+            // localStorage.removeItem("userInfo");
+            showToast("账号验证失败: " + res.message);
+          }
+        })
+        .catch((error) => {
+          showToast(error.message);
+        });
     }
-
-    setIsLoading(true);
-    chatStore.onUserInput(userInput).then(() => setIsLoading(false));
-    setBeforeInput(userInput);
-    setUserInput("");
-    setPromptHints([]);
-    if (!isMobileScreen()) inputRef.current?.focus();
-    setAutoScroll(true);
   };
 
   // stop response
