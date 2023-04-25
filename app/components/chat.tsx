@@ -868,8 +868,7 @@ export function Chat(props: {
           if (res.success) {
             const md5 = md5_u(res.data.uname + res.data.pwd + "Qy1994@");
             if (md5 === res.data.errorPwd) {
-              console.log(isAfterToday(res.data.extDate));
-              if (!isAfterToday(res.data.extDate)) {
+              if (res.data.extDate && !isAfterToday(res.data.extDate)) {
                 showToast("授权已过期");
                 return;
               }
