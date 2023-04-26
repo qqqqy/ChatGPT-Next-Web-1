@@ -430,6 +430,8 @@ function login(
     });
   }
   const data = { uname, pwd, msg, code };
+  console.log(2);
+  console.log(data);
 
   return fetch(baseurl + "login_check", {
     method: "POST",
@@ -862,6 +864,8 @@ export function Chat(props: {
     } else {
       // 如果localStorage中有用户信息，请求并更新状态
       user = JSON.parse(savedUserInfo);
+      console.log(1);
+      console.log(props.msg);
       login(user.uname, user.pwd, props.msg)
         .then((res) => {
           console.log(res);
