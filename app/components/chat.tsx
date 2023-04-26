@@ -866,7 +866,7 @@ export function Chat(props: {
       user = JSON.parse(savedUserInfo);
       console.log(1);
       console.log(props.msg);
-      login(user.uname, user.pwd, props.msg)
+      login(user.uname, user.pwd, userInput)
         .then((res) => {
           console.log(res);
           if (res.success) {
