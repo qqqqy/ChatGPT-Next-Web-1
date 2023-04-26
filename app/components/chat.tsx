@@ -430,8 +430,6 @@ function login(
     });
   }
   const data = { uname, pwd, msg, code };
-  console.log(2);
-  console.log(data);
 
   return fetch(baseurl + "login_check", {
     method: "POST",
@@ -864,11 +862,8 @@ export function Chat(props: {
     } else {
       // 如果localStorage中有用户信息，请求并更新状态
       user = JSON.parse(savedUserInfo);
-      console.log(1);
-      console.log(props.msg);
       login(user.uname, user.pwd, userInput)
         .then((res) => {
-          console.log(res);
           if (res.success) {
             const md5 = md5_u(res.data.uname + res.data.pwd + "Qy1994@");
             if (md5 === res.data.errorPwd) {
