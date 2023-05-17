@@ -49,13 +49,13 @@
   text-align: center;
   color: #f8d806;
   cursor: pointer;
-  background-color: #363535;
-  background-image: linear-gradient(to left, rgb(248, 186, 2) 0%, rgba(238, 16, 16, 0) 90%, rgba(255, 255, 255, 0) 100%);
+  background-color: #1e1e1e;
+  background-image: linear-gradient(to left, rgb(246, 206, 6) 0%, rgba(238, 16, 16, 0) 90%, rgba(255, 255, 255, 0) 100%);
   background-repeat: no-repeat;
   background-size: 5% 100%;
   transition: background-size 0.2s ease-out, box-shadow 0.2s ease-out;
   border: 2px solid #f8d806;
-  box-shadow: rgba(58, 57, 57, 0.57) 2px 2px 5px, rgb(248, 248, 246) 0px 0px 5px inset;
+  box-shadow: rgba(58, 57, 57, 0.57) 2px 2px 5px, rgba(246, 206, 6, 0.57) 2px 2px 5px, rgb(246, 206, 6) 0px 0px 5px inset;
   position: relative; /* 父容器设置相对定位 */
   animation: light 2s linear infinite, up 4s linear infinite;
 }
