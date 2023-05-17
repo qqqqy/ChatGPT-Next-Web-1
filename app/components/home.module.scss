@@ -48,25 +48,60 @@
   color: #f8d806;
   cursor: pointer;
   background-color: #363535;
-  background-image: linear-gradient(to right, rgb(168, 129, 4) 0%, rgba(255, 255, 255, 0) 90%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to left, rgb(248, 186, 2) 0%, rgba(238, 16, 16, 0) 90%, rgba(255, 255, 255, 0) 100%);
   background-repeat: no-repeat;
-  background-size: 1% 100%;
+  background-size: 5% 100%;
   transition: background-size 0.2s ease-out, box-shadow 0.2s ease-out;
   border: 2px solid #f8d806;
-  box-shadow: rgba(58, 57, 57, 0.57) 2px 2px 5px;
+  box-shadow: rgba(58, 57, 57, 0.57) 2px 2px 5px, rgb(248, 248, 246) 0px 0px 5px inset;
   position: relative; /* 父容器设置相对定位 */
+  animation: light 2s linear infinite, up 4s linear infinite;
 }
 
-.doff:hover {
-  animation: rotate 2s infinite;
+
+@keyframes light {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 80% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+.doff:active {
+  animation: rotate 3s infinite, light 1s linear infinite
+}
+
+@keyframes up {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 @keyframes rotate {
-  from {
-    transform: rotateY(0deg);
+  0% {
+    width: 70px;
+    transform: rotateZ(0deg);
+    text-align: center;
   }
-  to {
-    transform: rotateY(360deg);
+  50% {
+
+    width: 120px;
+  }
+  100% {
+    width: 70px;
+    text-align: center;
+    transform: rotateZ(1080deg);
   }
 }
 

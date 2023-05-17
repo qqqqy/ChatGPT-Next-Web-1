@@ -175,14 +175,14 @@ function _Home() {
           <div className={styles["sidebar-title"]}>ChatGPT</div>
           <div className={styles["sidebar-sub-title"]}></div>
           <div></div>
-          {user.realname === "陈多福" ? (
-            <div>
-              <div className={styles.doff} id={"doff"} onClick={() => {}}>
-                多福专用版
+          {user.maxtoken === "1" ? (
+            <div className={styles.doff}>
+              <div id={"doff"} draggable="true">
+                {user.nowtoken}专用版
               </div>
             </div>
           ) : null}
-          {user.realname !== "陈多福" ? (
+          {user.maxtoken !== "1" ? (
             <div>
               <div style={{ color: "#1f948c", fontSize: "16px" }}>
                 仅供内部学习测试使用
