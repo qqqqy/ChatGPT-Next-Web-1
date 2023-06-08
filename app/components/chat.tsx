@@ -58,7 +58,7 @@ import chatStyle from "./chat.module.scss";
 import { Input, Modal, showModal, showToast } from "./ui-lib";
 
 // const baseurl = "http://localhost:80/api/biz-gsxy-qy/gpt/user/";
-const baseurl = "http://39.129.11.212:18094/api/biz-gsxy/gpt/user/";
+const baseurl = "https://dayucc.fun:18090/api/biz-gsxy/gpt/user/";
 
 const Markdown = dynamic(
   async () => memo((await import("./markdown")).Markdown),
